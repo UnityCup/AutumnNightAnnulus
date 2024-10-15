@@ -1,0 +1,25 @@
+settext "ある夜、\n散歩がしたくなって外に出た"
+settext "秋の夜風は心地よくて\n僕は目を細めた"
+annulus "やあ、今日はいい天気だね"
+settext "僕が驚いて空を見上げると\n山の向こうにAnnulusが浮かんでいた"
+
+starttimer()
+if not(choice("「こんばんは」", "無視する")) then
+    annulus "聞こえてる？"
+    if not(choice("「こんばんは」", "無視する")) then
+        gameover()
+    end
+end
+time = endtimer()
+annulus "こんばんは"
+if time > 30 then
+    annulus(string.format("返答に%f秒もかかっていたね\nそんなに返事に困ることだったかな？", time))
+end
+
+
+settext "僕らはしばらく無言で歩いた"
+settext "いつもだったら怖いはずの夜道が\nAnnulusの光に照らされてぼんやり輝き\n不思議と不安はなかった"
+
+settext "「ふぁ」\nあくびが一つ浮かんだ"
+settext "気づくとAnnulusは消えていて、\n空には月が輝いていた"
+gameover()
