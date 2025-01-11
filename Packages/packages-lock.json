@@ -16,7 +16,16 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "193fe3ae838d8db49e801f8bcd4b3e7cadfa3ac5"
+      "hash": "615db49348f181fa350cca71e6a319c8ce5ef4ce"
+    },
+    "com.annulusgames.typescript-importer.lua": {
+      "version": "https://github.com/AnnulusGames/TypeScriptImporter.git?path=src/TypeScriptImporter/Assets/TypeScriptImporter.Lua",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {
+        "com.annulusgames.typescript-importer": "1.0.0"
+      },
+      "hash": "615db49348f181fa350cca71e6a319c8ce5ef4ce"
     },
     "com.cysharp.unitask": {
       "version": "https://github.com/Cysharp/UniTask.git?path=src/UniTask/Assets/Plugins/UniTask",

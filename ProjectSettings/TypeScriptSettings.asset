@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a901cd316d654dbba44b4972f90654d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tsconfigAsset: {fileID: 0}
+  tsconfigAsset: {fileID: 4900000, guid: ebcf201f04404943bbb0609fb0eec3a7, type: 3}
