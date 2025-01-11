@@ -104,7 +104,7 @@ namespace LuaAdventure
             var tsScript = Resources.Load<TypeScriptAsset>("TypeScript/TSScript");
 
             engine
-                .SetValue("wait", ScriptWait())
+                .SetValue("wait", )
 
             engine.Execute(tsScript.JavaScriptSource);
         }
@@ -118,7 +118,7 @@ namespace LuaAdventure
             luaState.Environment["wait"] = new LuaFunction(async (context, memory, cancellationToken) =>
             {
                 var arg = context.GetArgument<double>(0);
-                await ScriptWait(arg, cancellationToken);
+                await ScriptWait(arg);
                 return 0;
             });
 
