@@ -104,7 +104,7 @@ namespace LuaAdventure
             var tsScript = Resources.Load<TypeScriptAsset>("TypeScript/TSScript");
 
             engine
-                .SetValue()
+                .SetValue("wait", ScriptWait())
 
             engine.Execute(tsScript.JavaScriptSource);
         }
@@ -192,9 +192,9 @@ namespace LuaAdventure
             await UniTask.WaitWhile(this, e => !e._next);
         }
 
-        private async UniTask ScriptWait(double value, CancellationToken cancellationToken = default)
+        private async UniTask ScriptWait(double value)
         {
-            await UniTask.Delay(TimeSpan.FromSeconds(value), cancellationToken: cancellationToken);
+            await UniTask.Delay(TimeSpan.FromSeconds(value));
         }
 
         private void ScriptDebugLog(string value)
