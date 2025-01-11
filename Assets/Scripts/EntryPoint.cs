@@ -101,6 +101,12 @@ namespace LuaAdventure
         {
             TsExample();
             var engine = new Engine();
+            var tsScript = Resources.Load<TypeScriptAsset>("TypeScript/TSScript");
+
+            engine
+                .SetValue()
+
+            engine.Execute(tsScript.JavaScriptSource);
         }
 
         private void LuaScript()
@@ -126,14 +132,14 @@ namespace LuaAdventure
             luaState.Environment["annulus"] = new LuaFunction(async (context, memory, cancellationToken) =>
             {
                 var text = context.GetArgument<string>(0);
-                await ScriptAnnulus(text, cancellationToken);
+                await ScriptAnnulus(text);
                 return 0;
             });
 
             luaState.Environment["settext"] = new LuaFunction(async (context, memory, cancellationToken) =>
             {
                 var text = context.GetArgument<string>(0);
-                await ScriptSetText(text, cancellationToken);
+                await ScriptSetText(text);
                 return 0;
             });
 
@@ -142,7 +148,7 @@ namespace LuaAdventure
                 var choice0 = context.GetArgument<string>(0);
                 var choice1 = context.GetArgument<string>(1);
 
-                var result = await ScriptChoice(choice0, choice1, cancellationToken);
+                var result = await ScriptChoice(choice0, choice1);
 
                 memory.Span[0] = result;
 
@@ -151,20 +157,20 @@ namespace LuaAdventure
 
             luaState.Environment["gameover"] = new LuaFunction(async (context, memory, cancellationToken) =>
             {
-                await ScriptGameOver(cancellationToken);
+                await ScriptGameOver();
 
                 return 0;
             });
 
             luaState.Environment["starttimer"] = new LuaFunction((context, memory, cancellationToken) =>
             {
-                ScriptStartTimer(cancellationToken);
+                ScriptStartTimer();
                 return new ValueTask<int>(0);
             });
 
             luaState.Environment["endtimer"] = new LuaFunction((context, memory, cancellationToken) =>
             {
-                var time = ScriptEndTimer(cancellationToken);
+                var time = ScriptEndTimer();
                 memory.Span[0] = time;
                 return new ValueTask<int>(1);
             });
@@ -173,7 +179,7 @@ namespace LuaAdventure
             luaState.OpenStandardLibraries();
         }
 
-        private async UniTask SetText(string text, CancellationToken cancellationToken)
+        private async UniTask SetText(string text)
         {
             _tmpText.text = text;
             if (_textMotionHandle.IsActive()) _textMotionHandle.Cancel();
@@ -183,7 +189,7 @@ namespace LuaAdventure
                 .Bind(f => _tmpText.maxVisibleCharacters = (int)f);
             _next = false;
 
-            await UniTask.WaitWhile(this, e => !e._next, cancellationToken: cancellationToken);
+            await UniTask.WaitWhile(this, e => !e._next);
         }
 
         private async UniTask ScriptWait(double value, CancellationToken cancellationToken = default)
@@ -196,30 +202,29 @@ namespace LuaAdventure
             Debug.Log(value);
         }
 
-        private async UniTask ScriptAnnulus(string text, CancellationToken cancellationToken = default)
+        private async UniTask ScriptAnnulus(string text)
         {
-            await SetText($"「{text}」", cancellationToken);
+            await SetText($"「{text}」");
         }
 
-        private async UniTask ScriptSetText(string text, CancellationToken cancellationToken = default)
+        private async UniTask ScriptSetText(string text)
         {
-            await SetText($"＊ {text}".Replace("\n", "\n"), cancellationToken);
+            await SetText($"＊ {text}".Replace("\n", "\n"));
         }
 
-        private async UniTask<bool> ScriptChoice(string choice0, string choice1,
-            CancellationToken cancellationToken = default)
+        private async UniTask<bool> ScriptChoice(string choice0, string choice1)
         {
             _choice0Text.text = choice0;
             _choice1Text.text = choice1;
 
             _chose = false;
 
-            await UniTask.WaitWhile(this, e => !e._chose, cancellationToken: cancellationToken = default);
+            await UniTask.WaitWhile(this, e => !e._chose);
 
             return _choiceIndex == 0;
         }
 
-        private async UniTask ScriptGameOver(CancellationToken cancellationToken = default)
+        private async UniTask ScriptGameOver()
         {
             _chose = true;
             _next = true;
@@ -229,21 +234,20 @@ namespace LuaAdventure
                 .WithEase(_gameoverTextAlphaEase)
                 .BindToColorA(_gameoverText);
 
-            await UniTask.Delay(TimeSpan.FromSeconds(_gameoverTextAlphaDuration),
-                cancellationToken: cancellationToken);
+            await UniTask.Delay(TimeSpan.FromSeconds(_gameoverTextAlphaDuration));
 
             _retry = false;
-            await UniTask.WaitWhile(this, e => !e._retry, cancellationToken: cancellationToken);
+            await UniTask.WaitWhile(this, e => !e._retry);
 
             SceneManager.LoadScene("SampleScene");
         }
 
-        private void ScriptStartTimer(CancellationToken cancellationToken = default)
+        private void ScriptStartTimer()
         {
             _timerStartTime = Time.timeAsDouble;
         }
 
-        private int ScriptEndTimer(CancellationToken cancellationToken = default)
+        private int ScriptEndTimer()
         {
             var time = Time.timeAsDouble - _timerStartTime;
             return Mathf.CeilToInt((float)time);
