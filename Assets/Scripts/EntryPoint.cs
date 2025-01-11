@@ -1,5 +1,4 @@
 using System;
-using System.Threading;
 using System.Threading.Tasks;
 using Cysharp.Threading.Tasks;
 using Jint;
@@ -86,10 +85,10 @@ namespace LuaAdventure
         private void StartLogic()
         {
             TsScript();
-            LuaScript();
+//            LuaScript();
         }
 
-        private void TsExample()
+        private void TsJintExample()
         {
             var engine = new Engine()
                 .SetValue("log", new Action<object>(Debug.Log));
@@ -99,22 +98,27 @@ namespace LuaAdventure
 
         private void TsScript()
         {
-            TsExample();
-            var engine = new Engine();
-            var tsScript = Resources.Load<TypeScriptAsset>("TypeScript/TSScript");
+            TsJintExample();
+            var tsScript = Resources.Load<TypeScriptToLuaAsset>("TypeScript/TSScript");
 
-            engine
-                .SetValue("wait", )
-
-            engine.Execute(tsScript.JavaScriptSource);
+            var luaState = CreateLuaState();
+            luaState.OpenStandardLibraries();
+            luaState.DoStringAsync(tsScript.LuaSource);
         }
 
         private void LuaScript()
         {
-            var luaState = LuaState.Create();
             var textAsset = Resources.Load("LuaScript", typeof(TextAsset)) as TextAsset;
             var code = textAsset.text;
 
+            var luaState = CreateLuaState();
+            luaState.OpenStandardLibraries();
+            luaState.DoStringAsync(code, cancellationToken: destroyCancellationToken);
+        }
+
+        private LuaState CreateLuaState()
+        {
+            var luaState = LuaState.Create();
             luaState.Environment["wait"] = new LuaFunction(async (context, memory, cancellationToken) =>
             {
                 var arg = context.GetArgument<double>(0);
@@ -175,8 +179,7 @@ namespace LuaAdventure
                 return new ValueTask<int>(1);
             });
 
-            luaState.DoStringAsync(code, cancellationToken: destroyCancellationToken);
-            luaState.OpenStandardLibraries();
+            return luaState;
         }
 
         private async UniTask SetText(string text)
